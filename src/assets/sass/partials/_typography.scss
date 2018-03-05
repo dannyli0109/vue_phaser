@@ -1,0 +1,38 @@
+
+/* ===============
+  Fonts loading
+=============== */
+
+// @include font-face(Samplinal, fonts/Samplinal, 500, normal, eot woff2 woff);
+
+
+/* ===============
+  Headings typo
+=============== */
+
+[class^='_heading'] {
+    max-width: 100%;
+    display: block;
+    margin: 0 0 .5rem;
+
+    &.-primary { color: map-get($colors, primary); }
+    &.-secondary { color: map-get($colors, secondary); }
+
+    @include gridle_state(tablet) {
+        margin: .5rem 0;
+    }
+}
+
+._heading-m {
+    @include font(default);
+    font-size: 1.8rem;
+    line-height: 1.2;
+
+    @include gridle_state(tablet) {
+        font-size: 2.3rem;
+    }
+
+    @include gridle_state(giant) {
+        font-size: 2.6rem;
+    }
+}
