@@ -41,7 +41,7 @@ export default {
       methods: {
           preload () {
               this.game.load.spritesheet('dot', '../../../static/root/pacman/dot.png')
-              this.game.load.spritesheet('pacman', '../../../static/root/pacman/pacman.png', 32, 32)
+              this.game.load.spritesheet('pacman', '../../../static/root/pacman/pacman.png', 24, 24)
               this.game.load.image('tiles', '../../../static/root/pacman/pacman-tiles.png')
               this.game.load.tilemap('map', '../../../static/root/pacman/pacman-map.json', null, Phaser.Tilemap.TILED_JSON)
           },
@@ -62,10 +62,17 @@ export default {
               this.map.setCollisionByExclusion([14], true, this.layer)
 
               this.pacman = this.game.add.sprite(24, 24, 'pacman')
-              this.pacman.scale.setTo(0.5, 0.5)
+              this.pacman.scale.setTo(16 / 24, 16 / 24)
               this.pacman.anchor.set(0.5)
               this.game.physics.arcade.enable(this.pacman)
-              this.pacman.animations.add('move', [0, 1, 2], 20, true)
+              this.pacman.animations.add('right', [this.twoDIndexConvert(3, 4, 16), this.twoDIndexConvert(3, 6, 16), this.twoDIndexConvert(7, 0, 16)], 20, true)
+              this.pacman.animations.add('left', [this.twoDIndexConvert(3, 0, 16), this.twoDIndexConvert(3, 2, 16), this.twoDIndexConvert(7, 0, 16)], 20, true)
+              this.pacman.animations.add('up', [this.twoDIndexConvert(3, 1, 16), this.twoDIndexConvert(3, 3, 16), this.twoDIndexConvert(7, 0, 16)], 20, true)
+              this.pacman.animations.add('down', [this.twoDIndexConvert(3, 5, 16), this.twoDIndexConvert(3, 7, 16), this.twoDIndexConvert(7, 0, 16)], 20, true)
+              this.pacman.animations.add('stop', [this.twoDIndexConvert(7, 0, 16)], 20, true)
+
+              this.pacman.animations.play('stop')
+
               this.cursors = this.game.input.keyboard.createCursorKeys()
           },
           update (phaser) {
@@ -98,17 +105,13 @@ export default {
               }
 
               if (this.pacman.body.position.x > this.pacman.body.prev.x) {
-                  this.pacman.animations.play('move')
-                  this.pacman.angle = 0
+                  this.pacman.animations.play('right')
               } else if (this.pacman.body.position.x < this.pacman.body.prev.x) {
-                  this.pacman.animations.play('move')
-                  this.pacman.angle = 180
+                  this.pacman.animations.play('left')
               } else if (this.pacman.body.position.y > this.pacman.body.prev.y) {
-                  this.pacman.animations.play('move')
-                  this.pacman.angle = 90
+                  this.pacman.animations.play('down')
               } else if (this.pacman.body.position.y < this.pacman.body.prev.y) {
-                  this.pacman.animations.play('move')
-                  this.pacman.angle = 270
+                  this.pacman.animations.play('up')
               } else {
                   this.pacman.animations.stop()
               }
@@ -120,7 +123,6 @@ export default {
               }
           },
           render (phaser) {
-              // this.game.debug.bodyInfo(this.pacman, 32, 300)
           },
           eatDot (pacman, dot) {
               dot.kill()
@@ -128,6 +130,9 @@ export default {
           nextPage () {
               console.log('hi')
               this.$router.push({ path: 'next' })
+          },
+          twoDIndexConvert (row, col, colLength) {
+              return row * (colLength) + col
           }
       },
       data () {
