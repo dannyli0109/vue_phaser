@@ -18,21 +18,7 @@ export default {
           height: Number
       },
       mounted () {
-          let self = this
-
-          if (this.game == null) {
-              this.game = new Phaser.Game(this.width, this.height, Phaser.AUTO, this.$el, {
-                  preload: function preload () {
-                      self.preload(this)
-                  },
-                  create: function create () {
-                      self.create(this)
-                  },
-                  update: function update () {
-                      self.update(this)
-                  }
-              })
-          }
+          this.$store.dispatch('notLoading')
       },
       methods: {
           preload () {
@@ -44,12 +30,20 @@ export default {
           },
           nextPage () {
               console.log('hi')
+              this.$store.dispatch('notLoading')
+              this.$router.push({ path: '/' })
           }
       },
       data () {
           return {
               game: null
           }
+      },
+      beforeRouteUpdate (to, from, next) {
+          // just use `this`
+          //   this.$store.dispatch('notLoading')
+          console.log('route update')
+          next()
       }
 }
 </script>

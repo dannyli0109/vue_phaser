@@ -9,6 +9,7 @@ export default new Vuex.Store({
     modules: {
         preloader: require('@/store/preloader').default,
         device: require('@/store/device').default,
-        ui: require('@/store/ui').default
+        ui: require('@/store/ui').default,
+        pacman: require('@/store/pacman').default
     }
 })
