@@ -16,8 +16,8 @@ export default class extends Phaser.Sprite {
         addAnimation(this, 'up', [[3, 1, 16], [3, 3, 16], [7, 0, 16]], 20)
         addAnimation(this, 'down', [[3, 5, 16], [3, 7, 16], [7, 0, 16]], 20)
         addAnimation(this, 'stop', [[7, 0, 16]], 20)
+        addAnimation(this, 'die', [[7, 4, 16], [7, 5, 16], [7, 6, 16], [7, 7, 16], [7, 8, 16], [7, 9, 16], [7, 10, 16], [7, 11, 16], [7, 12, 16], [7, 13, 16], [7, 14, 16]], 20)
         this.game.physics.arcade.enable(this)
-
         this.animations.play('stop')
         this.cursors = this.game.input.keyboard.createCursorKeys()
     }

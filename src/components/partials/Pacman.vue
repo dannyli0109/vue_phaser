@@ -24,7 +24,6 @@ export default {
       },
       data () {
           return {
-              game: null,
               pacman: null,
               cursor: null,
               map: null,
@@ -82,6 +81,7 @@ export default {
               this.game.physics.arcade.collide(this.pacman, this.layer, this.collide, null, this)
               this.game.physics.arcade.collide(this.blinky, this.layer)
               this.game.physics.arcade.overlap(this.pacman, this.dots, this.eatDot, null, this)
+              this.game.physics.arcade.overlap(this.pacman, this.blinky, this.die, null, this)
           },
           render (phaser) {
           },
@@ -92,31 +92,32 @@ export default {
           collide () {
               // console.log('collide')
           },
+          die (pacman, blinky) {
+              pacman.animations.play('die')
+              // pacman.animations.currentAnim.onComplete.add(() => {
+              //     pacman.kill()
+              // })
+          },
           newGame () {
-              let self = this
-
-              if (this.game == null) {
-                  this.score = 0
-                  this.game = new Phaser.Game(this.width, this.height, Phaser.AUTO, this.$el, {
-                      preload: function preload () {
-                          self.preload(this)
-                      },
-                      create: function create () {
-                          self.create(this)
-                      },
-                      update: function update () {
-                          self.update(this)
-                      },
-                      render: function render () {
-                          self.render(this)
-                      }
-                  })
-              }
+              this.$store.dispatch('initGame', {
+                  width: 500,
+                  height: 500,
+                  el: this.$el,
+                  preload: this.preload,
+                  create: this.create,
+                  update: this.update,
+                  render: this.render
+              })
           }
       },
       watch: {
           $router (to, from) {
               console.log('change')
+          }
+      },
+      computed: {
+          game () {
+              return this.$store.getters.game
           }
       }
 }

@@ -1,5 +1,5 @@
 <template>
-    <div id='gameScreen1'>
+    <div id='gameScreen'>
         <button @click='nextPage'>hi1</button>
     </div>
 </template>
@@ -18,7 +18,7 @@ export default {
           height: Number
       },
       mounted () {
-          this.$store.dispatch('notLoading')
+          console.log('next mounted')
       },
       methods: {
           preload () {
@@ -38,12 +38,6 @@ export default {
           return {
               game: null
           }
-      },
-      beforeRouteUpdate (to, from, next) {
-          // just use `this`
-          //   this.$store.dispatch('notLoading')
-          console.log('route update')
-          next()
       }
 }
 </script>

@@ -1,17 +1,7 @@
 <template>
-    <div id='gameScreen'>
-        <template v-if="loading">
-            <loading></loading>
-        </template>
-        <template v-else>
-            <p @click='nextPage'>Score: {{score}}</p>
-            <pacman></pacman>
-            <button
-                @click="goNext">
-                go next
-            </button>
-        </template>
-
+    <div>
+        <pacman></pacman>
+        <router-link :to="{ name: 'next'}">next</router-link>
     </div>
 </template>
 
@@ -28,42 +18,19 @@
 
 export default {
       name: 'dashboard',
-      props: {
-          width: Number,
-          height: Number
-      },
       components: {
           loading: Loading,
           pacman: PacmanVue
       },
-      data () {
-          return {
-              game: null,
-              pacman: null,
-              cursor: null,
-              map: null,
-              layer: null,
-              lastPressed: null,
-              score: 0
-          }
-      },
       methods: {
           nextPage () {
-              console.log('hi')
-              this.$router.push({ path: 'next' })
-          },
-          goNext () {
-              this.$store.dispatch('isLoading')
               this.$router.push({ path: 'next' })
           }
       },
       computed: {
-          loading () {
-              return this.$store.getters.loading
-          }
+
       },
       mounted () {
-          this.$store.dispatch('notLoading')
       }
 }
 </script>

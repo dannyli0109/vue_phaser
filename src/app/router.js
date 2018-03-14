@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from './store'
 
 // declare Vue-Router
 Vue.use(Router)
@@ -33,7 +34,23 @@ const router = new Router({
 // Router guard
 router.beforeEach((to, from, next) => {
     // proceed
+    if (store.getters.game) {
+        store.dispatch('destroyGame')
+    } else {
+    }
     next()
+})
+
+router.afterEach((to, from) => {
+    // store.dispatch('initGame', {
+    //     width: 500,
+    //     height: 500,
+    //     el: 'gameScreen',
+    //     preload: methods.preload,
+    //     create: methods.create,
+    //     update: methods.update,
+    //     render: methods.render
+    // })
 })
 
 export default router
