@@ -1,5 +1,6 @@
 <template>
     <div id='gameScreen'>
+      <button @click="resetGame">reset</button>
     </div>
 </template>
 
@@ -10,7 +11,9 @@
   import Phaser from 'phaser'
   import Pacman from '../../lib/Pacman'
   import Blinky from '../../lib/Blinky'
+  import { DIRECTIONS } from '../../lib/Const'
   import Loading from '../partials/Loading.vue'
+  import Swipe from 'phaser-swipe'
   /* eslint-enable no-unused-vars */
 
 export default {
@@ -42,8 +45,11 @@ export default {
               this.game.load.image('tiles', '../../../static/root/pacman/pacman-tiles.png')
               this.game.load.image('door', '../../../static/root/pacman/door.png')
               this.game.load.tilemap('map', '../../../static/root/pacman/pacman-map.json', null, Phaser.Tilemap.TILED_JSON)
+              this.game.load.audio('chomp', '../../../static/root/pacman/pacman_chomp.wav')
+              this.game.load.audio('die', '../../../static/root/pacman/Pacman-death-sound.mp3')
           },
           create (phaser) {
+              this.swipe = new Swipe(this.game)
               this.pacman = new Pacman({
                   game: this.game,
                   x: 22,
@@ -57,6 +63,7 @@ export default {
                   y: 22,
                   asset: 'pacman'
               })
+              // add the map
               this.map = this.game.add.tilemap('map')
               this.map.addTilesetImage('pacman-tiles', 'tiles')
               this.map.addTilesetImage('door', 'door')
@@ -66,18 +73,58 @@ export default {
 
               this.dots = this.game.add.physicsGroup()
 
+              // add the dot
               this.map.createFromTiles(7, 14, 'dot', this.layer, this.dots)
 
               this.dots.setAll('x', 6, false, false, 1)
               this.dots.setAll('y', 6, false, false, 1)
 
               this.map.setCollisionByExclusion([14], true, this.layer)
+
               this.game.add.existing(this.pacman)
               this.game.add.existing(this.blinky)
+
+              this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
+              this.game.scale.setShowAll()
+              this.game.scale.maxHeight = 496
+              this.game.scale.maxWidth = 448
+              window.addEventListener(
+                  'resize', () => {
+                      this.game.scale.refresh()
+                  }
+              )
+              this.game.scale.refresh()
+
               this.cursors = this.game.input.keyboard.createCursorKeys()
-              this.$store.dispatch('notLoading')
+              // this.$store.dispatch('notLoading')
           },
           update (phaser) {
+              let direction = this.swipe.check()
+              if (direction !== null) {
+                  // direction= { x: x, y: y, direction: direction }
+                  switch (direction.direction) {
+                      case this.swipe.DIRECTION_LEFT:
+                          this.pacman.go(DIRECTIONS.LEFT)
+                          break
+                      case this.swipe.DIRECTION_RIGHT:
+                          this.pacman.go(DIRECTIONS.RIGHT)
+                          break
+                      case this.swipe.DIRECTION_UP:
+                          this.pacman.go(DIRECTIONS.UP)
+                          break
+                      case this.swipe.DIRECTION_DOWN:
+                          this.pacman.go(DIRECTIONS.DOWN)
+                          break
+                      case this.swipe.DIRECTION_UP_LEFT:
+                          break
+                      case this.swipe.DIRECTION_UP_RIGHT:
+                          break
+                      case this.swipe.DIRECTION_DOWN_LEFT:
+                          break
+                      case this.swipe.DIRECTION_DOWN_RIGHT:
+                          break
+                  }
+              }
               this.game.physics.arcade.collide(this.pacman, this.layer, this.collide, null, this)
               this.game.physics.arcade.collide(this.blinky, this.layer)
               this.game.physics.arcade.overlap(this.pacman, this.dots, this.eatDot, null, this)
@@ -93,31 +140,53 @@ export default {
               // console.log('collide')
           },
           die (pacman, blinky) {
-              pacman.animations.play('die')
-              // pacman.animations.currentAnim.onComplete.add(() => {
-              //     pacman.kill()
-              // })
+              pacman.died = true
+              pacman.body.velocity.x = 0
+              pacman.body.velocity.y = 0
+              pacman.animations.play('die', 10, false)
+              if (!pacman.dieSound.isPlaying) {
+                  pacman.dieSound.play()
+              }
+              pacman.animations.currentAnim.onComplete.add(() => pacman.kill(), this)
           },
           newGame () {
               this.$store.dispatch('initGame', {
-                  width: 500,
-                  height: 500,
+                  width: 448,
+                  height: 496,
                   el: this.$el,
                   preload: this.preload,
                   create: this.create,
                   update: this.update,
                   render: this.render
               })
+          },
+          resetGame () {
+              this.dots.hash.forEach(dot => {
+                  dot.reset(dot.position.x, dot.position.y)
+              })
+              this.pacman.reset(22, 22)
+              this.pacman.body.velocity.x = 0
+              this.pacman.body.velocity.y = 0
+              this.pacman.lastPressed = null
+              this.pacman.died = false
+              this.pacman.play('stop')
           }
       },
       watch: {
-          $router (to, from) {
-              console.log('change')
+          loading (not) {
+              if (not) {
+                  this.newGame()
+              } else {
+                  this.$store.dispatch('destroyGame')
+              }
           }
       },
       computed: {
           game () {
               return this.$store.getters.game
+          },
+          loading () {
+              return this.$store.getters.loading
           }
       }
 }
@@ -128,5 +197,11 @@ export default {
 
 .dashboard {
     background: transparent;
+}
+
+#gameScreen {
+    width: 100%;
+    height: 100%;
+    margin: auto;
 }
 </style>

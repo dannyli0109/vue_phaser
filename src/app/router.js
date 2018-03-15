@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import store from './store'
+// import store from './store'
 
 // declare Vue-Router
 Vue.use(Router)
@@ -34,14 +34,12 @@ const router = new Router({
 // Router guard
 router.beforeEach((to, from, next) => {
     // proceed
-    if (store.getters.game) {
-        store.dispatch('destroyGame')
-    } else {
-    }
+    // store.dispatch('isLoading')
     next()
 })
 
 router.afterEach((to, from) => {
+    // store.dispatch('notLoading')
     // store.dispatch('initGame', {
     //     width: 500,
     //     height: 500,

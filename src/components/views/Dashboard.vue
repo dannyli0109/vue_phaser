@@ -1,7 +1,9 @@
 <template>
-    <div>
-        <pacman></pacman>
-        <router-link :to="{ name: 'next'}">next</router-link>
+    <div class="container">
+        <div class="inner">
+            <pacman></pacman>
+            <router-link :to="{ name: 'next'}">next</router-link>
+        </div>
     </div>
 </template>
 
@@ -41,4 +43,18 @@ export default {
 .dashboard {
     background: transparent;
 }
+.container {
+    background-color: black;
+    position: relative;
+
+
+    .inner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        // width: 100%;
+    }
+}
+
 </style>

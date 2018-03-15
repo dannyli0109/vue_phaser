@@ -52,7 +52,7 @@ const mutations = {
     },
     ['DESTROY_GAME'] (state) {
         state.game.destroy()
-        state.game = null
+        // state.game = null
     }
 }
 // export the store module
